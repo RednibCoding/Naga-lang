@@ -8,13 +8,13 @@ namespace Naga.CodeAnalysis.AST
 		List<Node> _nodes;
 
 		public RootNode()
-            :base (NodeType.RootNodeType)
+			:base (NodeType.RootNodeType)
 		{
 			_nodes = new List<Node>();
 		}
 
 		public RootNode(List<Node> nodes)
-            :base (NodeType.RootNodeType)
+			:base (NodeType.RootNodeType)
 		{
 			_nodes = nodes;
 		}

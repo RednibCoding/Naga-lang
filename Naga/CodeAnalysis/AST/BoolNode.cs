@@ -12,8 +12,8 @@ namespace Naga.CodeAnalysis.AST
 		}
 
 		public override string Stringify(string indent)
-        {
-            return $"{indent}<BoolNode> '{_value.ToString()}'";
-        }
+		{
+			return $"{indent}<BoolNode> '{_value.ToString()}'";
+		}
 	}
 }

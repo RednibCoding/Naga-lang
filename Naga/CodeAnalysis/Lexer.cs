@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace Naga.CodeAnalysis
 {
-    class Lexer
+	class Lexer
 	{
 		Token _current;
 		InputStream _stream;
 		List<string> _keywords;
 		List<char> _punc;
-        List<char> _operators;
+		List<char> _operators;
 
-        public Lexer(string text)
+		public Lexer(string text)
 		{
 			_stream = new InputStream(text);
 			_keywords = new List<string> {"if", "then", "else", "lambda", "true", "false"};
@@ -35,9 +35,9 @@ namespace Naga.CodeAnalysis
 		}
 
 		bool IsOperator(char c)
-        {
+		{
 			return _operators.Contains(c);
-        }
+		}
 
 		bool IsPunc(char c)
 		{
@@ -170,5 +170,5 @@ namespace Naga.CodeAnalysis
 		{
 			_stream.Error(msg);
 		}
-    }
+	}
 }

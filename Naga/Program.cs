@@ -8,8 +8,7 @@ namespace Naga
 		static void Main(string[] args)
 		{
 			//LexerTestRepl.Run();
-            ParserTestRepl.Run();
-
+			ParserTestRepl.Run();
 		}
 	}
 }
