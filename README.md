@@ -27,7 +27,7 @@ planned:
 - list
 - array
 
-Keywords (wip)
+Keywords
 - if
 - then
 - else
