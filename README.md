@@ -82,17 +82,17 @@ It's planned that Naga has it's own interpreter and also a compiler/transpiler f
 #### AST:
  ```html
 <Root>
- <AssignNode> '='
-  <SymbolNode> 'a'
-  <IfNode>
-   <Condition>
-    <FunCallNode>
-     <SymbolNode> 'foo'
-   <Then-Block>
-    <FunCallNode>
-     <SymbolNode> 'bar'
-   <Else-Block>
-    <FunCallNode>
-     <SymbolNode> 'baz'
+  <AssignNode> '='
+   <SymbolNode> 'a'
+   <IfNode>
+    <Condition>
+     <FunCallNode>
+      <SymbolNode> 'foo'
+    <Then-Block>
+     <FunCallNode>
+      <SymbolNode> 'bar'
+    <Else-Block>
+     <FunCallNode>
+      <SymbolNode> 'baz'
 ```
  
