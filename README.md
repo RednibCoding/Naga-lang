@@ -48,7 +48,7 @@ It's planned that Naga has it's own interpreter and also a compiler/transpiler f
     fib = lambda (n) if n < 2 then n else fib(n - 1) + fib(n - 2);
 #### AST:
 ```html
- <Root>
+<Root>
  <AssignNode> '='
   <SymbolNode> 'fib'
   <LambdaNode>
