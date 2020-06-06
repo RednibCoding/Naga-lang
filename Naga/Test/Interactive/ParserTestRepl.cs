@@ -20,7 +20,6 @@ namespace Naga.Test.Interactive
 				if (ast == null)
 					break;
 
-					//Console.WriteLine(token.ToString());
 				Console.WriteLine(ast.Stringify(""));
 			}
 		}
