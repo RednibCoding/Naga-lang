@@ -2,7 +2,7 @@
 
 
 # Naga-lang <img src="https://github.com/RednibCoding/Naga-lang/blob/master/res/naga_icon.png" width="60"> 
-Naga is a minimal and easy to use programming language written in C# .netcore 3.1
+Naga is a minimal and easy to use general purpose programming language written in C# .netcore 3.1
 
 Everything is written by hand and no lexer generators or parser generators have been used.
 
