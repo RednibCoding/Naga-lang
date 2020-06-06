@@ -17,6 +17,33 @@ It's planned that Naga has it's own interpreter and also a compiler/transpiler f
 - compiler: wip
 
 ## Syntax
+
+Data types:
+- Number (int and floats)
+- String ("this is a string")
+- Bool (true/false)
+
+planned:
+- list
+- array
+
+Keywords (wip)
+- if
+- then
+- else
+- lambda
+- true
+- false
+
+planned:
+- while
+- elseif
+
+Operators:
+```html
++ - * / % = == & | < > >= <= !
+```
+## Examples
 #### Code:
 	a = 10;
 	squared = lambda(x) x*x;
