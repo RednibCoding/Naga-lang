@@ -14,7 +14,7 @@ It's planned that Naga has it's own interpreter and also a compiler/transpiler f
 - Parser: working
 - error checking: working
 - Evaluator: wip
-- compiler: wip
+- Compiler: wip
 
 ## Syntax
 
@@ -36,12 +36,13 @@ Keywords
 - false
 
 planned:
+- struct
 - while
 - elseif
 
 Operators:
 ```html
-+ - * / % = == & | < > >= <= !
++ - * / % = == != < > >= <= && ||
 ```
 ## Examples
 #### Code:
