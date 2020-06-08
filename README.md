@@ -74,7 +74,10 @@ num2 = square( num1 );
 ```
 Declaring an anonymous function and calling it
 ```html
-# Anonymous function without parameters #
+# 
+ Anonymous function without parameters.
+ You can omit the ":()" when not parameters are given
+#
 {
 	num = 10;
 	x = 5 + num * 2;
@@ -82,7 +85,10 @@ Declaring an anonymous function and calling it
 ```
 Declaring an anonymous function with parameters and calling it
 ```html
-# Anonymous function with parameters #
+# 
+ Anonymous function with parameters.
+ Introduce comming parameters with colon ":"
+#
 :(x){
 	num = 10;
 	x = x + num * 2;
@@ -98,7 +104,6 @@ func = :(x)
 	 The last expression is what get's returned from a function.
 	 There is no "return" keyword in Naga
 	#
-	:()
 	{
 		#
 		 This gets returned from the anonymous function
@@ -110,8 +115,7 @@ func = :(x)
 
 func2 = func(8)
 
-# Variable "squared_8" is 64 #
-squared_8 = func2();
+squared_8 = func2(); # "squared_8" is 64 #
 
 #
  As you can see, functions keep their variable values.
