@@ -77,7 +77,7 @@ Declaring an anonymous function and calling it
 # Anonymous function without parameters #
 {
 	num = 10;
-	x = x + num * 2;
+	x = 5 + num * 2;
 }(); # The open and closing parenthesize calling the function #
 ```
 Declaring an anonymous function with parameters and calling it
