@@ -31,64 +31,27 @@ namespace Naga.CodeAnalysis
 		AstNode ParseExpression(AstNode prev)
 		{
 			var token = _lexer.Peek();
-			if (_stopAt.Contains(token.Type))
-			{
-				return prev;
-			}
+			if (_stopAt.Contains(token.Type)) return prev;
 			if (token.Type == "eof") _lexer.Error("Unexpected end of file");
 			_lexer.Next();
 
 			// Variable types
 			if ("number string symbol".Contains(token.Type) && prev == null)
-			{	// After number, string, symbol cannot directly follow a function declaration
-				if (":{".Contains(_lexer.Peek().Type))
-					_lexer.Error($"Invalid syntax: Function declaration after {token.Type} '{token.Value}'");
-				return ParseExpression(new AstNode(token.Type, token.Value, null));
-			}
+				return ParseAtom(token);
 			// Binary operation (+-*/)
 			else if (token.Type == "operation")
-			{
-				if (":{".Contains(_lexer.Peek().Type) || prev.Type == "function_decl")
-					_lexer.Error("Anonymous functions are not allowed in operation");
-				var next = ParseExpression(null);
-				return ParseExpression(new AstNode(token.Type, token.Value, prev, next));
-			}
+				return ParseBinaryOperation(token, prev);
 			// Function call
 			else if (token.Type == "(")
-			{
-				if (prev == null) _lexer.Error("Function call on non existing function");
-				if (prev.Type != "symbol" || prev.Type != "function_decl")
-					_lexer.Error($"{prev.Type} '{prev.Value}' is not callable");
-				var args = ParseExpressions(",", ")");
-				var argsNode = new AstNode("function_args", args.Count.ToString(), args.ToArray());
-				return new AstNode("function_call", "", prev, argsNode);
-			}
+				return ParseFunctionCall(prev);
 			// Function declaration
 			else if ("{:".Contains(token.Type))
-			{
-				List<AstNode> params_ = new List<AstNode>();
-				if (token.Type == ":")
-				{
-					params_ = ParseParams();
-					token = _lexer.Peek();
-					_lexer.Next();
-				}
-
-				if (token.Type != "{") _lexer.Error("Expecting function declaration '"+"{'");
-				var body = ParseExpressions(";", "}");
-				var paramsNode = new AstNode("function_params", params_.Count.ToString(), params_.ToArray());
-				var	bodyNode = new AstNode("function_body", body.Count.ToString(), body.ToArray());
-
-				return ParseExpression(new AstNode("function_decl", "", paramsNode, bodyNode));
-			}
+				return ParseFunctionDecl(token, prev);
 			// Assignment
 			else if (token.Type == "=")
-			{
-				if (prev.Type != "symbol") _lexer.Error("Left operand of assignment must be a symbol");
-				var next = ParseExpression(null);
-				return ParseExpression(new AstNode("assignment", token.Type, prev, next));
-			}
-			else _lexer.Error($"Unexpected token: <{token.Type}> '{token.Value}'");
+				return ParseAssignment(token, prev);
+			else
+				_lexer.Error($"Unexpected token: <{token.Type}> '{token.Value}'");
 			return null;
 		}
 
@@ -126,6 +89,57 @@ namespace Naga.CodeAnalysis
 				}
 			}
 			return nodes;
+		}
+
+		AstNode ParseAtom((string Type, string Value) token)
+		{
+			// After number, string, symbol cannot directly follow a function declaration
+			if (":{".Contains(_lexer.Peek().Type))
+				_lexer.Error($"Invalid syntax: Function declaration after {token.Type} '{token.Value}'");
+			return ParseExpression(new AstNode(token.Type, token.Value, null));
+		}
+
+		AstNode ParseAssignment((string Type, string Value) token, AstNode prev)
+		{
+			if (prev.Type != "symbol") _lexer.Error("Left operand of assignment must be a symbol");
+			var next = ParseExpression(null);
+			return ParseExpression(new AstNode("assignment", token.Type, prev, next));
+		}
+
+		AstNode ParseFunctionDecl((string Type, string Value) token, AstNode prev)
+		{
+			List<AstNode> params_ = new List<AstNode>();
+			if (token.Type == ":")
+			{
+				params_ = ParseParams();
+				token = _lexer.Peek();
+				_lexer.Next();
+			}
+
+			if (token.Type != "{") _lexer.Error("Expecting function declaration '"+"{'");
+			var body = ParseExpressions(";", "}");
+			var paramsNode = new AstNode("function_params", params_.Count.ToString(), params_.ToArray());
+			var	bodyNode = new AstNode("function_body", body.Count.ToString(), body.ToArray());
+
+			return ParseExpression(new AstNode("function_decl", "", paramsNode, bodyNode));
+		}
+
+		AstNode ParseFunctionCall(AstNode prev)
+		{
+			if (prev == null) _lexer.Error("Function call on non existing function");
+			if (!(prev.Type == "symbol" || prev.Type == "function_decl"))
+				_lexer.Error($"{prev.Type} '{prev.Value}' is not callable");
+			var args = ParseExpressions(",", ")");
+			var argsNode = new AstNode("function_args", args.Count.ToString(), args.ToArray());
+			return ParseExpression(new AstNode("function_call", "", prev, argsNode));
+		}
+
+		AstNode ParseBinaryOperation((string Type, string Value) token, AstNode prev)
+		{
+			if (":{".Contains(_lexer.Peek().Type) || prev.Type == "function_decl")
+				_lexer.Error("Anonymous functions are not allowed in operation");
+			var next = ParseExpression(null);
+			return ParseExpression(new AstNode(token.Type, token.Value, prev, next));
 		}
 	}
 }
