@@ -16,7 +16,7 @@ namespace Naga.CodeAnalysis
 		{
 
 			var c = _stream.Peek;
-			while(c == ' ' || c == '\n' || c == '#')
+			while(c == ' ' || c == '\t' || c == '\n' || c == '#')
 			{
 				if (c == '#')
 				{
@@ -34,7 +34,7 @@ namespace Naga.CodeAnalysis
 			else if ("+-*/".Contains(c)) {_stream.Next(); return("operation", c.ToString());}
 			else if ("\"'".Contains(c)) return("string", ScanEnclosed(c));
 			else if (Char.IsDigit(c)) return("number", Scan(".0123456789"));
-			else if (Char.IsLetter(c)) return("symbol", Scan("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-?"));
+			else if (Char.IsLetter(c) || c == '_') return("symbol", Scan("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-?"));
 			else Error($"Unexpected character: '{c}'");
 			return ("","");
 		}

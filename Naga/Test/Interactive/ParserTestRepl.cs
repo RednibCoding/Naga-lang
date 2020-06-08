@@ -31,7 +31,7 @@ namespace Naga.Test.Interactive
 					example += "}\n";
 					example += ");\n";
 
-					var parser = new Parser(new Lexer(example), ";");
+					var parser = new Parser(new Lexer(line), ";");
 					var ast = parser.Parse();
 					if (ast == null) break;
 					foreach (AstNode node in ast)

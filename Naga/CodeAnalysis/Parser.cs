@@ -40,12 +40,17 @@ namespace Naga.CodeAnalysis
 
 			// Variable types
 			if ("number string symbol".Contains(token.Type) && prev == null)
-			{
+			{	// After number, string, symbol cannot follow a function declaration
+				// without assign symbol
+				if (":{".Contains(_lexer.Peek().Type))
+					_lexer.Error($"Invalid syntax: Function declaration after {token.Type} '{token.Value}'");
 				return ParseExpression(new AstNode(token.Type, token.Value, null));
 			}
 			// Binary operation (+-*/)
 			else if (token.Type == "operation")
 			{
+				if (":{".Contains(_lexer.Peek().Type) || prev.Type == "function_decl")
+					_lexer.Error("Anonymous functions are not allowed in operation");
 				var next = ParseExpression(null);
 				return ParseExpression(new AstNode(token.Type, token.Value, prev, next));
 			}
@@ -72,9 +77,7 @@ namespace Naga.CodeAnalysis
 				var paramsNode = new AstNode("function_params", params_.Count.ToString(), params_.ToArray());
 				var	bodyNode = new AstNode("function_body", body.Count.ToString(), body.ToArray());
 
-				if (_lexer.Peek().Type == "(") // Function delc gets called righ away
-					return ParseExpression(new AstNode("function_decl", "", paramsNode, bodyNode));
-				return new AstNode("function_decl", "", paramsNode, bodyNode);
+				return ParseExpression(new AstNode("function_decl", "", paramsNode, bodyNode));
 			}
 			// Assignment
 			else if (token.Type == "=")

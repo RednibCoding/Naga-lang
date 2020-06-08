@@ -28,12 +28,12 @@ namespace Naga.CodeAnalysis
 			return _children[index];
 		}
 
-		public string Stringify(string indentation="")
+		public string Stringify(string indentation="", string spacing = "  ")
 		{
 			string str = "";
 			str += $"{indentation}[{Type}] {Value}";
 			str += "\n";
-			indentation += " ";
+			indentation += spacing;
 			foreach (AstNode child in _children)
 				str += child.Stringify(indentation);
 
