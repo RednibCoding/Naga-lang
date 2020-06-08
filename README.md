@@ -80,7 +80,7 @@ Declaring an anonymous function and calling it
 #
 {
 	num = 10;
-	x = 5 + num * 2;
+	x = 5 + num * 2; # Last expression is what gets returned #
 }(); # The open and closing parenthesize calling the function #
 ```
 Declaring an anonymous function with parameters and calling it
@@ -88,10 +88,11 @@ Declaring an anonymous function with parameters and calling it
 # 
  Anonymous function with parameters.
  Introduce comming parameters with colon ":"
+ And wrapping them in parethesize seperated by commas.
 #
-:(x){
+:(x, y){
 	num = 10;
-	x = x + num * 2;
+	x + y + num * 2; # Last expression is what gets returned #
 }(5);
 ```
 Declaring and returning a function from a function
@@ -102,7 +103,8 @@ func = :(x)
 	#
 	 This anonymous function get's returned from "func".
 	 The last expression is what get's returned from a function.
-	 There is no "return" keyword in Naga
+	 There is no "return" keyword in Naga.
+	 So this anonymous function gets returned:
 	#
 	{
 		#
