@@ -204,7 +204,7 @@ func = :(x)
 	x * 2; # This gets returned #
 }
 
-myFunc(func(5), y)
+myFunc(func(5), y);
 ```
 You can also pass the function itself as argument so it can be called inside the other function
 ```html
@@ -218,6 +218,6 @@ myFunc = :(x, y)
 	x() * y; # This gets returned #
 }
 
-myFunc(func, 5)
+myFunc(func, 5);
 
 ```
