@@ -26,9 +26,9 @@ So you can pass functions around like variables. All that makes the language ver
 
 ## Features
 - Numbers (floating-point)
-- Strings
+- Strings (supported are double and single quotes)
 - Functions
-- Multiline Comments
+- Multiline Comments (starting and ending with hash symbol '#')
 - A special "None" value (wip)
 
 Operators:
