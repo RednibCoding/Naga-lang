@@ -2,7 +2,7 @@
 
 
 # Naga-lang <img src="https://github.com/RednibCoding/Naga-lang/blob/master/res/naga_icon.png" width="60">
-Naga is a tiny but practical language written in C# and .NET Core 3.1 .
+Naga is a tiny but practical programming language written in C# and .NET Core 3.1 .
 
 ## Status
 - Lexer: working
