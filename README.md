@@ -20,7 +20,7 @@ to write Lexers/Parsers/Compilers/Transpilers for.
 For example, the fact that language features such as "if" are provided as functions written in Naga itself instead of
 special keywords means there is little code needed to write the language, and little learning needed to understand it.
 
-Everything in Naga is an expression. Thats where the power comes from. You can for example pass functions as arguments,
+Everything in Naga is an expression. You can for example pass functions as arguments,
 return a function from functions or declare functions inside functions and return them from functions.
 So you can pass functions around like variables. All that makes the language very powerfull while still beeing minimalistic.
 
@@ -31,12 +31,12 @@ So you can pass functions around like variables. All that makes the language ver
 - Multiline Comments
 - A special "None" value (wip)
 
-That's about it.
-
 Operators:
 ```html
 + - * /
 ```
+
+That's about it.
 
 ## Building a language ontop of Naga with Naga
 Naga does not provide special syntax for things like lists, maps and
@@ -112,6 +112,13 @@ func2 = func(8)
 
 # Variable "squared_8" is 64 #
 squared_8 = func2();
+
+#
+ As you can see, functions keep their variable values.
+ This fact let's you write pretty interesting constructs.
+ E.g. you can mimic arrays, lists, pairs and even objects because
+ objects are pretty similar to closures.
+#
 ```
 
  
