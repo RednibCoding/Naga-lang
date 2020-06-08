@@ -76,7 +76,7 @@ Declaring an anonymous function and calling it
 ```html
 # 
  Anonymous function without parameters.
- You can omit the ":()" when not parameters are given
+ You can omit the ":()" when no parameters are given
 #
 {
 	num = 10;
