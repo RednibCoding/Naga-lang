@@ -80,10 +80,10 @@ Declaring an anonymous function and calling it
 	x = x + num * 2;
 }(); # The open and closing parenthesize calling the function #
 ```
-Anonymous function with parameters
+Declaring an anonymous function with parameters and calling it
 ```html
+# Anonymous function with parameters #
 :(x){
-	# Anonymous function #
 	num = 10;
 	x = x + 10 * 2;
 }(5);
