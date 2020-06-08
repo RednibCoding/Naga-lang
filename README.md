@@ -48,52 +48,70 @@ A tutorial on how you can build things that behave like objects in languages lik
 C++ out of Naga functions is comming soon.
 
 ## Examples
-#### Code:
 Comments
-	# This is a comment #
+```html
+# This is a comment #
+```
 Multiline Comments
-	# As you have guessed,
-	  there is no such thing
-	  as single line comments
-	  in Naga. The above comment
-	  is also a multiline comment #
+```html
+# As you have guessed,
+  there is no such thing
+  as single line comments
+  in Naga. The above comment
+  is also a multiline comment #
+```
 Declaring a variable
-	num1 = 3;
+```html
+num1 = 3;
+```
 Declaring a function
-	square = :(x) {x * x;};
+```html
+square = :(x) {x * x;};
+```
 Calling a function
-	num2 = square( num1 );
+```html
+num2 = square( num1 );
+```
 Declaring an anonymous function and calling it
-	{
-		# Anonymous function
-		num = 10;
-		x = x + 10 * 2;
-	}(); # The open and closing parenthesize calling the function
-Anonymous function with arguments
-	:(x){
-		# Anonymous function
-		num = 10;
-		x = x + 10 * 2;
-	}(5);
+```html
+# Anonymous function without parameters #
+{
+	num = 10;
+	x = x + num * 2;
+}(); # The open and closing parenthesize calling the function #
+```
+Anonymous function with parameters
+```html
+:(x){
+	# Anonymous function #
+	num = 10;
+	x = x + 10 * 2;
+}(5);
+```
 Declaring and returning a function from a function
-	# declaring a function
-	func = :(x)
+```html
+# Declaring a function "func" #
+func = :(x)
+{
+	#
+	 This anonymous function get's returned from "func".
+	 The last expression is what get's returned from a function.
+	 There is no "return" keyword in Naga
+	#
+	:()
 	{
-		# this anonymous function get's returned
-		  the last expreassion is what get's returned
-		  from a function.
-		  There is no "return" keyword in Naga #
-		:()
-		{
-			# this gets returned from the anonymous function
-			x*x;
-		}
+		#
+		 This gets returned from the anonymous function
+		 "x" can be accessed from here (Closure)
+		#
+		x*x;
 	}
-	
-	func2 = func(8)
-	
-	# Variable "squared_8" is 64
-	squared_8 = func2();
+}
 
+func2 = func(8)
+
+# Variable "squared_8" is 64 #
+squared_8 = func2();
+```
 
  
