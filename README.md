@@ -221,11 +221,3 @@ myFunc = :(x, y)
 myFunc(func, 5)
 
 ```
-From the above example you could also declare the function anonymously
-```html
-myFunc = :(x, y)
-{
-	x() * y; # This gets returned #
-}
-myFunc(:(x){x*2}, 5)
-```
