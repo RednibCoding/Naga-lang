@@ -40,8 +40,7 @@ namespace Naga.CodeAnalysis
 
 			// Variable types
 			if ("number string symbol".Contains(token.Type) && prev == null)
-			{	// After number, string, symbol cannot follow a function declaration
-				// without assign symbol
+			{	// After number, string, symbol cannot directly follow a function declaration
 				if (":{".Contains(_lexer.Peek().Type))
 					_lexer.Error($"Invalid syntax: Function declaration after {token.Type} '{token.Value}'");
 				return ParseExpression(new AstNode(token.Type, token.Value, null));
@@ -57,6 +56,9 @@ namespace Naga.CodeAnalysis
 			// Function call
 			else if (token.Type == "(")
 			{
+				if (prev == null) _lexer.Error("Function call on non existing function");
+				if (prev.Type != "symbol" || prev.Type != "function_decl")
+					_lexer.Error($"{prev.Type} '{prev.Value}' is not callable");
 				var args = ParseExpressions(",", ")");
 				var argsNode = new AstNode("function_args", args.Count.ToString(), args.ToArray());
 				return new AstNode("function_call", "", prev, argsNode);
