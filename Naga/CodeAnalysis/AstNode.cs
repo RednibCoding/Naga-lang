@@ -23,14 +23,21 @@ namespace Naga.CodeAnalysis
 			}
 		}
 
-		public void AppendChild(AstNode child)
-		{
-			_children.Add(child);
-		}
-
 		public AstNode GetChild(int index)
 		{
 			return _children[index];
+		}
+
+		public string Stringify(string indentation="")
+		{
+			string str = "";
+			str += $"{indentation}[{Type}] {Value}";
+			str += "\n";
+			indentation += " ";
+			foreach (AstNode child in _children)
+				str += child.Stringify(indentation);
+
+			return str;
 		}
 	}
 }

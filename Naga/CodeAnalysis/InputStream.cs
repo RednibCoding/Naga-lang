@@ -41,7 +41,7 @@ namespace Naga.CodeAnalysis
 
 		public void Error(string msg)
 		{
-			Console.WriteLine($"LEXER ERROR on line {_line}({_col}): {msg}");
+			Console.WriteLine($"ERROR on line {_line}({_col}): {msg}");
 			Console.Write("Press any key to exit...");
 			Console.ReadKey();
 			Environment.Exit(0);

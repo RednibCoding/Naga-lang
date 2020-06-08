@@ -18,10 +18,24 @@ namespace Naga.Test.Interactive
 					if (string.IsNullOrWhiteSpace(line))
 						return;
 
-					var parser = new Parser(new Lexer(line), ";");
+					var example = "square = :(x){ x * x;};\n";
+					example += "num1 = 3;\n";
+					example += "num2 = square( num1 );\n";
+					example += "\n";
+					example += "if( equals( num1, num2 ),\n";
+					example += "{\n";
+					example += "print( );\n";
+					example += "},\n";
+					example += "{\n";
+					example += "print( );\n";
+					example += "}\n";
+					example += ");\n";
+
+					var parser = new Parser(new Lexer(example), ";");
 					var ast = parser.Parse();
 					if (ast == null) break;
-					Console.WriteLine(ast);
+					foreach (AstNode node in ast)
+						Console.WriteLine(node.Stringify());
 				}
 			}
 		}

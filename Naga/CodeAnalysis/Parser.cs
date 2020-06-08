@@ -53,16 +53,27 @@ namespace Naga.CodeAnalysis
 			else if (token.Type == "(")
 			{
 				var args = ParseExpressions(",", ")");
-				var argsNode = new AstNode("function_args", "", args.ToArray());
+				var argsNode = new AstNode("function_args", args.Count.ToString(), args.ToArray());
 				return new AstNode("function_call", "", prev, argsNode);
 			}
 			// Function declaration
-			else if (token.Type == "{")
+			else if ("{:".Contains(token.Type))
 			{
-				var params_ = ParseParams();
+				List<AstNode> params_ = new List<AstNode>();
+				if (token.Type == ":")
+				{
+					params_ = ParseParams();
+					token = _lexer.Peek();
+					_lexer.Next();
+				}
+
+				if (token.Type != "{") _lexer.Error("Expecting function declaration '"+"{'");
 				var body = ParseExpressions(";", "}");
-				var paramsNode = new AstNode("function_params", "", params_.ToArray());
-				var bodyNode = new AstNode("function_body", "", body.ToArray());
+				var paramsNode = new AstNode("function_params", params_.Count.ToString(), params_.ToArray());
+				var	bodyNode = new AstNode("function_body", body.Count.ToString(), body.ToArray());
+
+				if (_lexer.Peek().Type == "(") // Function delc gets called righ away
+					return ParseExpression(new AstNode("function_decl", "", paramsNode, bodyNode));
 				return new AstNode("function_decl", "", paramsNode, bodyNode);
 			}
 			// Assignment
@@ -70,19 +81,17 @@ namespace Naga.CodeAnalysis
 			{
 				if (prev.Type != "symbol") _lexer.Error("Left operand of assignment must be a symbol");
 				var next = ParseExpression(null);
-				return ParseExpression(new AstNode("assignment", token.Value, prev, next));
+				return ParseExpression(new AstNode("assignment", token.Type, prev, next));
 			}
-			else _lexer.Error($"Unexpected token: <{token.Type}> '{token.Type}'");
+			else _lexer.Error($"Unexpected token: <{token.Type}> '{token.Value}'");
 			return null;
 		}
 
 		// Parse parameters in a function declaration
 		List<AstNode> ParseParams()
 		{
-			if (_lexer.Peek().Type != ":") return null;
-			_lexer.Next();
 			var token = _lexer.Peek();
-			if (token.Type != "(") _lexer.Error("':' must be followed by '(' in a function");
+			if (token.Type != "(") _lexer.Error("':' must be followed by '(' in a function declaration");
 			_lexer.Next();
 			var params_ = ParseExpressions(",", ")");
 			foreach (AstNode node in params_)

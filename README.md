@@ -47,7 +47,70 @@ structure from two values.
 A tutorial on how you can build things that behave like objects in languages like Java and
 C++ out of Naga functions is comming soon.
 
-## Examples
+## Example
+	square = :(x){ x * x;};
+
+	num1 = 3;
+	num2 = square( num1 );
+
+	if( equals( num1, num2 ),
+		{
+			print( "num1 equals num2." );
+		},
+		{
+			print( "num1 does not equal num2." );
+		}
+	);
+This prints:
+
+	num1 does not equal num2.
+
+The Parser produces the following abstract syntax tree:
+```html
+[assignment] =
+ [symbol] square
+ [function_decl]
+  [function_params] 1
+   [symbol] x
+  [function_body] 1
+   [operation] *
+    [symbol] x
+    [symbol] x
+
+[assignment] =
+ [symbol] num1
+ [number] 3
+
+[assignment] =
+ [symbol] num2
+ [function_call]
+  [symbol] square
+  [function_args] 1
+   [symbol] num1
+
+[function_call]
+ [symbol] if
+ [function_args] 3
+  [function_call]
+   [symbol] equals
+   [function_args] 2
+    [symbol] num1
+    [symbol] num2
+  [function_decl]
+   [function_params] 0
+   [function_body] 1
+    [function_call]
+     [symbol] print
+     [function_args] 1
+  [function_decl]
+   [function_params] 0
+   [function_body] 1
+    [function_call]
+     [symbol] print
+     [function_args] 1
+```
+
+## Language
 Comments
 ```html
 # This is a comment #
@@ -126,5 +189,43 @@ squared_8 = func2(); # "squared_8" is 64 #
  objects are pretty similar to closures.
 #
 ```
+You can pass a function declaration as argument to other functions:
+```html
+myFunc(:(x){x*x;}(5), y);
+```
+You can also omit the parameters if there aren't any
+```html
+myFunc({x*x;}(), y);
+```
+You can also pass a non-anonymous function as argument
+```html
+func = :(x)
+{
+	x * 2; # This gets returned #
+}
 
- 
+myFunc(func(5), y)
+```
+You can also pass the function itself as argument so it can be called inside the other function
+```html
+func = :(x)
+{
+	x * 2; # This gets returned #
+}
+
+myFunc = :(x, y)
+{
+	x() * y; # This gets returned #
+}
+
+myFunc(func, 5)
+
+```
+From the above example you could also declare the function anonymously
+```html
+myFunc = :(x, y)
+{
+	x() * y; # This gets returned #
+}
+myFunc(:(x){x*2}, 5)
+```

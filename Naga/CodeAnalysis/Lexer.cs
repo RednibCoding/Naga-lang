@@ -34,7 +34,7 @@ namespace Naga.CodeAnalysis
 			else if ("+-*/".Contains(c)) {_stream.Next(); return("operation", c.ToString());}
 			else if ("\"'".Contains(c)) return("string", ScanEnclosed(c));
 			else if (Char.IsDigit(c)) return("number", Scan(".0123456789"));
-			else if (Char.IsLetter(c)) return("symbol", Scan("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"));
+			else if (Char.IsLetter(c)) return("symbol", Scan("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-?"));
 			else Error($"Unexpected character: '{c}'");
 			return ("","");
 		}
