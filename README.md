@@ -85,7 +85,7 @@ Declaring an anonymous function with parameters and calling it
 # Anonymous function with parameters #
 :(x){
 	num = 10;
-	x = x + 10 * 2;
+	x = x + num * 2;
 }(5);
 ```
 Declaring and returning a function from a function
