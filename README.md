@@ -30,6 +30,7 @@ So you can pass functions around like variables. All that makes the language ver
 - Functions
 - Multiline Comments
 - A special "None" value (wip)
+
 That's about it.
 
 Operators:
