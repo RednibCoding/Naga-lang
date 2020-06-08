@@ -81,7 +81,7 @@ Declaring an anonymous function and calling it
 {
 	num = 10;
 	x = 5 + num * 2; # Last expression is what gets returned #
-}(); # The open and closing parenthesize calling the function #
+}(); # Calling the function #
 ```
 Declaring an anonymous function with parameters and calling it
 ```html
@@ -93,7 +93,7 @@ Declaring an anonymous function with parameters and calling it
 :(x, y){
 	num = 10;
 	x + y + num * 2; # Last expression is what gets returned #
-}(5);
+}(5, 8); # Calling the function with arguments #
 ```
 Declaring and returning a function from a function
 ```html
