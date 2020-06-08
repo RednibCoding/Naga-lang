@@ -1,9 +1,10 @@
 ﻿using System;
 using Naga.CodeAnalysis;
 
+
 namespace Naga.Test.Interactive
 {
-	// Quick and dirty REPL implementation for testing
+	// Quick and dirty REPL implementation for testing the lexer
 	class LexerTestRepl
 	{
 		public static void Run()
@@ -16,14 +17,12 @@ namespace Naga.Test.Interactive
 					return;
 
 				var lexer = new Lexer(line);
-				while(true)
+				var token = lexer.Next();
+				while (token.Type != "eof")
 				{
-					var token = lexer.Next();
-					if (token == null)
-						break;
-
-					Console.WriteLine(token.ToString());
-				}
+					Console.WriteLine("<"+token.Type + "> : "+token.Value);
+					token = lexer.Next();
+				}				
 				Console.WriteLine();
 			}
 		}

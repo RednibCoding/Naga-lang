@@ -1,13 +1,8 @@
 
 
 
-# Naga-lang <img src="https://github.com/RednibCoding/Naga-lang/blob/master/res/naga_icon.png" width="60"> 
-Naga is a minimal and easy to use general purpose programming language written in C# .netcore 3.1
-
-Everything is written by hand and no lexer generators or parser generators have been used.
-
-It's planned that Naga has it's own interpreter and also a compiler/transpiler for different backends.
-
+# Naga-lang <img src="https://github.com/RednibCoding/Naga-lang/blob/master/res/naga_icon.png" width="60">
+Naga is a tiny but practical language written in C# and .NET Core 3.1 .
 
 ## Status
 - Lexer: working
@@ -15,112 +10,89 @@ It's planned that Naga has it's own interpreter and also a compiler/transpiler f
 - error checking: working
 - Evaluator: wip
 - Compiler: wip
+- Standard library: wip
 
-## Syntax
+## Design Principles
+Naga is designed to be very small: it should have as few features as possible
+while still being useful. The goal behind Naga is to build a language that is easy
+to write Lexers/Parsers/Compilers/Transpilers for.
 
-Data types:
-- Number (int and floats)
-- String ("this is a string")
-- Bool (true/false)
+For example, the fact that language features such as "if" are provided as functions written in Naga itself instead of
+special keywords means there is little code needed to write the language, and little learning needed to understand it.
 
-planned:
-- list
-- array
+Everything in Naga is an expression. Thats where the power comes from. You can for example pass functions as arguments,
+return a function from functions or declare functions inside functions and return them from functions.
+So you can pass functions around like variables. All that makes the language very powerfull while still beeing minimalistic.
 
-Keywords
-- if
-- then
-- else
-- lambda
-- true
-- false
-
-planned:
-- struct
-- while
-- elseif
+## Features
+- Numbers (floating-point)
+- Strings
+- Functions
+- Multiline Comments
+- A special "None" value (wip)
+That's about it.
 
 Operators:
 ```html
-+ - * / % = == != < > >= <= && ||
++ - * /
 ```
+
+## Building a language ontop of Naga with Naga
+Naga does not provide special syntax for things like lists, maps and
+objects, but they can be built up using the features of Naga functions.
+It is planned that the Naga library contains functions like pair that makes a simple data
+structure from two values.
+
+A tutorial on how you can build things that behave like objects in languages like Java and
+C++ out of Naga functions is comming soon.
+
 ## Examples
 #### Code:
-	a = 10;
-	squared = lambda(x) x*x;
+Comments
+	# This is a comment #
+Multiline Comments
+	# As you have guessed,
+	  there is no such thing
+	  as single line comments
+	  in Naga. The above comment
+	  is also a multiline comment #
+Declaring a variable
+	num1 = 3;
+Declaring a function
+	square = :(x) {x * x;};
+Calling a function
+	num2 = square( num1 );
+Declaring an anonymous function and calling it
+	{
+		# Anonymous function
+		num = 10;
+		x = x + 10 * 2;
+	}(); # The open and closing parenthesize calling the function
+Anonymous function with arguments
+	:(x){
+		# Anonymous function
+		num = 10;
+		x = x + 10 * 2;
+	}(5);
+Declaring and returning a function from a function
+	# declaring a function
+	func = :(x)
+	{
+		# this anonymous function get's returned
+		  the last expreassion is what get's returned
+		  from a function.
+		  There is no "return" keyword in Naga #
+		:()
+		{
+			# this gets returned from the anonymous function
+			x*x;
+		}
+	}
+	
+	func2 = func(8)
+	
+	# Variable "squared_8" is 64
+	squared_8 = func2();
 
-	a_squared = squared(a);
-#### AST
-```html
-<Root>
- <AssignNode> '='
-  <SymbolNode> 'a'
-  <NumberNode> '10'
- <AssignNode> '='
-  <SymbolNode> 'squared'
-  <LambdaNode>
-   <Params>
-    <SymbolNode> 'x'
-   <Body>
-    <BinaryNode> '*'
-     <SymbolNode> 'x'
-     <SymbolNode> 'x'
- <AssignNode> '='
-  <SymbolNode> 'a_squared'
-  <FunCallNode>
-   <SymbolNode> 'squared'
-   <Args>
-    <SymbolNode> 'a'
-```
-#### Code:
-    fib = lambda (n) if n < 2 then n else fib(n - 1) + fib(n - 2);
-#### AST:
-```html
-<Root>
- <AssignNode> '='
-  <SymbolNode> 'fib'
-  <LambdaNode>
-   <Params>
-    <SymbolNode> 'n'
-   <Body>
-    <IfNode>
-     <Condition>
-      <BinaryNode> '<'
-       <SymbolNode> 'n'
-       <NumberNode> '2'
-     <Then-Block>
-      <SymbolNode> 'n'
-     <Else-Block>
-      <BinaryNode> '+'
-       <FunCallNode>
-        <SymbolNode> 'fib'
-        <Args>
-         <BinaryNode> '-'
-          <SymbolNode> 'n'
-          <NumberNode> '1'
-       <FunCallNode>
-        <SymbolNode> 'fib'
-        <Args>
-         <BinaryNode> '-'
-          <SymbolNode> 'n'
-          <NumberNode> '2'
- ```
-#### Code:
-    a = if foo() then bar() else baz();
-#### AST:
- ```html
-<Root>
-  <AssignNode> '='
-   <SymbolNode> 'a'
-   <IfNode>
-    <Condition>
-     <FunCallNode>
-      <SymbolNode> 'foo'
-    <Then-Block>
-     <FunCallNode>
-      <SymbolNode> 'bar'
-    <Else-Block>
-     <FunCallNode>
-      <SymbolNode> 'baz'
-```
+
  

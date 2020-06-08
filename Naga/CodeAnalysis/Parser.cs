@@ -1,230 +1,117 @@
-
-using System;
 using System.Collections.Generic;
-using Naga.CodeAnalysis.AST;
+
 
 namespace Naga.CodeAnalysis
 {
 	class Parser
 	{
-		readonly Dictionary<string, byte> _precedence;
 		Lexer _lexer;
+		string _stopAt;
 
-		public Parser(string text)
+		public Parser(Lexer lexer, string stopAt)
 		{
-			_lexer = new Lexer(text);
-			_precedence = new Dictionary<string, byte>
+			_lexer = lexer;
+			_stopAt = stopAt;
+		}
+
+		public List<AstNode> Parse()
+		{
+			var nodes = new List<AstNode>();
+			while(true)
 			{
-				{"=", 1},
-				{"||", 2},
-				{"&&", 3},
-				{"<", 7}, {">", 7}, {"<=", 7}, {">=", 7}, {"==", 7}, {"!=", 7},
-				{"+", 10}, {"-", 10},
-				{"*", 20}, {"/", 20}, {"%", 20}
-			};
-		}
-
-		public RootNode Parse()
-		{
-			return ParseToplevel();
-		}
-
-		RootNode ParseToplevel()
-		{
-			var ast = new RootNode();
-			while (!_lexer.Eof)
-			{
-				ast.AppendNode(ParseExpression());
-				if (!_lexer.Eof) MatchPunc(";");
-			}
-			return ast;
-		}
-
-		Node ParseExpression()
-		{
-			return MaybeFunCall( () => {
-				return MaybeBinary(ParseAtom(), 0);
-			});
-		}
-
-		Node ParseAtom()
-		{
-			return MaybeFunCall( () => {
-				if (IsPuncPeek("("))
-				{
-					_lexer.Next();
-					var expr = ParseExpression();
-					MatchPunc(")");
-					return expr;
-				}
-				if (IsPuncPeek("{")) return ParseProg();
-				if (IsKeywordPeek("if")) return ParseIf();
-				if (IsKeywordPeek("true") || IsKeywordPeek("false")) return ParseBool();
-				if (IsKeywordPeek("lambda")) {_lexer.Next(); return ParseLambda();}
-				var token = _lexer.Next();
-				if (token.Type == TokenType.SymbolTokenType) return new SymbolNode(token.Value);
-				if (token.Type == TokenType.StringTokenType) return new StringNode(token.Value);
-				if (token.Type == TokenType.NumberTokenType)
-				{
-					var success = double.TryParse(token.Value, out var value);
-					if (!success) _lexer.Error($"Expecting number got '{token.Value}'");
-					return new NumberNode(value);
-				}
-				unexpected();
-				return null;
-			});
-		}
-
-		Node MaybeFunCall(Func<Node> expr)
-		{
-			var exp = expr();
-			return IsPuncPeek("(") ? ParseFuncCall(exp) : exp;
-		}
-
-		Node MaybeBinary(Node left, int thisPrec)
-		{
-			var token = _lexer.Peek;
-			if (token == null || token.Type != TokenType.OperatorTokenType)
-				return left;
-			
-			var hisPrec = _precedence[token.Value];
-			if (hisPrec > thisPrec)
-			{
+				var node = ParseExpression(null);
+				if (node != null) nodes.Add(node);
 				_lexer.Next();
-				var right = MaybeBinary(ParseAtom(), hisPrec);
-				if (token.Value == "=")
-				{
-					if (left.Type == NodeType.SymbolNodeType)
-						return new AssignNode(left as SymbolNode, right);
-					else
-						_lexer.Error("Left operand of assignment must be an identifier");
-				}
-				else
-				{
-					return new BinaryNode(token.Value, left, right);
-				}
+				var next = _lexer.Peek();
+				if (next.Type == "eof") break;
 			}
-			return left;
-		}
-
-		Node ParseFuncCall(Node func)
-		{
-			if (func.Type == NodeType.SymbolNodeType)
-				return new FunCallNode(func as SymbolNode, ParseArgs("(", ")", ",", ParseExpression));
-
-			_lexer.Error("Expected function identifier");
-			return null;
-		}
-
-		Node ParseSymbol()
-		{
-			var sym = _lexer.Next();
-			if (sym.Type != TokenType.SymbolTokenType)
-				_lexer.Error("Expecting identifier");
-			return new SymbolNode(sym.Value);
-		}
-
-		Node ParseIf()
-		{
-			MatchKeyword("if");
-			var cond = ParseExpression();
-			if (!IsPuncPeek("{")) MatchKeyword("then");
-			var then = ParseExpression();
-			Node else_ = null;
-			if (IsKeywordPeek("else"))
-			{
-				_lexer.Next();
-				else_ = ParseExpression();
-			}
-			return new IfNode(cond, then, else_);
-		}
-
-		Node ParseLambda()
-		{
-			return new LambdaNode(ParseArgs("(", ")", ",", ParseSymbol), ParseExpression());
-		}
-
-		Node ParseBool()
-		{
-			return new BoolNode(_lexer.Next().Value == "true");
-		}
-
-		List<Node> ParseArgs(string startPunc, string stopPunc, string sepPunc, Func<Node> parserFunc)
-		{
-			List<Node> nodes = new List<Node>();
-			var first = true;
-			MatchPunc(startPunc);
-			while (!_lexer.Eof)
-			{
-				if (IsPuncPeek(stopPunc)) break;
-				if (first) first = false; else MatchPunc(sepPunc);
-				if (IsPuncPeek(stopPunc)) break;
-				nodes.Add(parserFunc());
-			}
-			MatchPunc(stopPunc);
 			return nodes;
 		}
 
-		Node ParseProg()
+		AstNode ParseExpression(AstNode prev)
 		{
-			var nodes = ParseArgs("{", "}", ";", ParseExpression);
-			if (nodes.Count == 0) return new BoolNode(false);
-			if (nodes.Count == 1) return nodes[0];
+			var token = _lexer.Peek();
+			if (_stopAt.Contains(token.Type))
+			{
+				return prev;
+			}
+			if (token.Type == "eof") _lexer.Error("Unexpected end of file");
+			_lexer.Next();
 
-			return new RootNode(nodes);
+			// Variable types
+			if ("number string symbol".Contains(token.Type) && prev == null)
+			{
+				return ParseExpression(new AstNode(token.Type, token.Value, null));
+			}
+			// Binary operation (+-*/)
+			else if (token.Type == "operation")
+			{
+				var next = ParseExpression(null);
+				return ParseExpression(new AstNode(token.Type, token.Value, prev, next));
+			}
+			// Function call
+			else if (token.Type == "(")
+			{
+				var args = ParseExpressions(",", ")");
+				var argsNode = new AstNode("function_args", "", args.ToArray());
+				return new AstNode("function_call", "", prev, argsNode);
+			}
+			// Function declaration
+			else if (token.Type == "{")
+			{
+				var params_ = ParseParams();
+				var body = ParseExpressions(";", "}");
+				var paramsNode = new AstNode("function_params", "", params_.ToArray());
+				var bodyNode = new AstNode("function_body", "", body.ToArray());
+				return new AstNode("function_decl", "", paramsNode, bodyNode);
+			}
+			// Assignment
+			else if (token.Type == "=")
+			{
+				if (prev.Type != "symbol") _lexer.Error("Left operand of assignment must be a symbol");
+				var next = ParseExpression(null);
+				return ParseExpression(new AstNode("assignment", token.Value, prev, next));
+			}
+			else _lexer.Error($"Unexpected token: <{token.Type}> '{token.Type}'");
+			return null;
 		}
 
-		bool IsPuncPeek(string ch)
+		// Parse parameters in a function declaration
+		List<AstNode> ParseParams()
 		{
-			var token = _lexer.Peek;
-			if (token == null) return false;
-			if (token.Type != TokenType.PuncTokenType) return false;
-			if (ch == "") return false;
-			if (token.Value == ch) return true;
-			return false;
+			if (_lexer.Peek().Type != ":") return null;
+			_lexer.Next();
+			var token = _lexer.Peek();
+			if (token.Type != "(") _lexer.Error("':' must be followed by '(' in a function");
+			_lexer.Next();
+			var params_ = ParseExpressions(",", ")");
+			foreach (AstNode node in params_)
+			{
+				if (node.Type != "symbol") _lexer.Error("Only symbols are allowed as function parameter");
+			}
+			return params_;
 		}
 
-		bool IsKeywordPeek(string kw)
+		// Parse multiple expressions seperated by "sep" (e.g. "," or ";") until end (e.g. ")" or "}") has been reached
+		List<AstNode> ParseExpressions(string sep, string end)
 		{
-			var token = _lexer.Peek;
-			if (token == null) return false;
-			if (token.Type != TokenType.KeywordTokenType) return false;
-			if (kw == "") return false;
-			if (token.Value == kw) return true;
-			return false;
-		}
-
-		bool IsOperatorPeek(string op)
-		{
-			var token = _lexer.Peek;
-			if (token == null) return false;
-			if (token.Type != TokenType.OperatorTokenType) return false;
-			if (op == "") return false;
-			if (token.Value == op) return true;
-			return false;
-		}
-
-		void MatchPunc(string ch)
-		{
-			if (IsPuncPeek(ch)) _lexer.Next();
-			else _lexer.Error($"Expecting punctuation '{ch}'");
-		}
-
-		void MatchKeyword(string kw)
-		{
-			if (IsKeywordPeek(kw)) _lexer.Next();
-			else _lexer.Error($"Expecting keyword '{kw}'");
-		}
-
-		void MatchOperator(string op)
-		{
-			if (IsOperatorPeek(op)) _lexer.Next();
-			else _lexer.Error($"Expecting operator '{op}'");
-		}
-
-		void unexpected()
-		{
-			_lexer.Error($"Unexpected token '{_lexer.Peek.ToString()}'");
+			List<AstNode> nodes = new List<AstNode>();
+			var token = _lexer.Peek();
+			if (token.Type == end)
+				_lexer.Next();
+			else
+			{
+				var argsParser = new Parser(_lexer, $"{sep} {end}");
+				while (token.Type != end)
+				{
+					var expr = argsParser.ParseExpression(null);
+					if (expr != null) nodes.Add(expr);
+					token = _lexer.Peek();
+					_lexer.Next();
+					if (token.Type == "eof") _lexer.Error("Unexpected end of file");
+				}
+			}
+			return nodes;
 		}
 	}
 }

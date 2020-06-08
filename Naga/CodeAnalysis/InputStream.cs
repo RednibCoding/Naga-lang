@@ -1,5 +1,6 @@
 using System;
 
+
 namespace Naga.CodeAnalysis
 {
 	class InputStream
@@ -31,9 +32,16 @@ namespace Naga.CodeAnalysis
 			return chr;
 		}
 
+		public void RevertTo(int line, int pos, int col)
+		{
+			_line = line;
+			_pos = pos;
+			_col = col;
+		}
+
 		public void Error(string msg)
 		{
-			Console.WriteLine($"ERROR on line {_line}/{_col}: {msg}");
+			Console.WriteLine($"LEXER ERROR on line {_line}({_col}): {msg}");
 			Console.Write("Press any key to exit...");
 			Console.ReadKey();
 			Environment.Exit(0);
